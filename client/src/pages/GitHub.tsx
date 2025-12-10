@@ -76,7 +76,7 @@ export default function GitHub() {
       setUser(userData);
 
       const reposResponse = await fetch(
-        `https://api.github.com/users/${username}/repos?sort=updated&per_page=100`
+        `https://api.github.com/users/${username}/repos?sort=updated&per_page=50`
       );
       if (!reposResponse.ok) throw new Error('Failed to fetch repositories');
       const reposData = await reposResponse.json();
@@ -94,7 +94,7 @@ export default function GitHub() {
 
       try {
         const eventsResponse = await fetch(
-          `https://api.github.com/users/${username}/events/public?per_page=100`
+          `https://api.github.com/users/${username}/events/public?per_page=50`
         );
         if (eventsResponse.ok) {
           const eventsData = await eventsResponse.json();
@@ -124,7 +124,7 @@ export default function GitHub() {
               };
             })
             .filter((commit: any) => commit.sha)
-            .slice(0, 10);
+            .slice(0, 5);
           setCommits(pushEvents);
         }
       } catch (commitError) {
