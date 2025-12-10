@@ -72,19 +72,12 @@ cd DiscordPortfolio
 npm install
 ```
 
-3. **Configure Environment Variables**
-Copy the example environment file:
-```bash
-cp .env.example .env
-```
+3. **Update Discord ID**
+Edit the Discord user ID in these files:
+- `client/src/hooks/useDiscordPresence.ts`
+- `client/src/components/DiscordProfile.tsx`
 
-Edit the `.env` file and add your configuration:
-```env
-VITE_DISCORD_ID=your_discord_id_here
-VITE_SPOTIFY_API_BASE_URL=https://spot-rect.vercel.app
-```
-
-Replace `your_discord_id_here` with your actual Discord user ID.
+Replace `931511745284038696` with your Discord user ID.
 
 4. **Run development server**
 ```bash
@@ -97,9 +90,7 @@ The application will be available at `http://localhost:5000`
 
 ### Deploy on Replit
 1. Fork this repository on Replit
-2. Set up environment variables in the Secrets tool:
-   - `VITE_DISCORD_ID`: Your Discord user ID
-   - `VITE_SPOTIFY_API_BASE_URL`: `https://spot-rect.vercel.app`
+2. Update your Discord ID in the configuration files
 3. Click the "Run" button
 4. Your portfolio will be live!
 
@@ -112,8 +103,7 @@ npm run start
 ## 🎨 Customization
 
 ### Update Personal Information
-- **Discord Profile**: Set your Discord ID in the `.env` file (`VITE_DISCORD_ID`)
-- **Spotify API**: Configure the base URL in `.env` (`VITE_SPOTIFY_API_BASE_URL`)
+- **Discord Profile**: Update the Discord ID in `useDiscordPresence.ts`
 - **GitHub Projects**: Modify `client/src/pages/GitHub.tsx`
 - **Spotify Playlists**: Update playlist IDs in `client/src/pages/Spotify.tsx`
 - **Tech Stack**: Edit the tech stack items in `client/src/components/TechStackCard.tsx`
