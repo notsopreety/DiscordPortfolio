@@ -37,9 +37,26 @@ interface GitHubUser {
   created_at: string;
 }
 
+interface GitHubCommit {
+  sha: string;
+  commit: {
+    message: string;
+    author: {
+      name: string;
+      date: string;
+    };
+  };
+  html_url: string;
+  repository: {
+    name: string;
+    full_name: string;
+  };
+}
+
 export default function GitHub() {
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
   const [user, setUser] = useState<GitHubUser | null>(null);
+  const [commits, setCommits] = useState<GitHubCommit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const username = 'notsopreety';
@@ -74,6 +91,34 @@ export default function GitHub() {
         });
       
       setRepos(sortedRepos);
+
+      const eventsResponse = await fetch(
+        `https://api.github.com/users/${username}/events/public?per_page=100`
+      );
+      if (eventsResponse.ok) {
+        const eventsData = await eventsResponse.json();
+        const pushEvents = eventsData
+          .filter((event: any) => event.type === 'PushEvent')
+          .flatMap((event: any) => 
+            event.payload.commits.map((commit: any) => ({
+              sha: commit.sha,
+              commit: {
+                message: commit.message,
+                author: {
+                  name: event.actor.login,
+                  date: event.created_at,
+                },
+              },
+              html_url: `https://github.com/${event.repo.name}/commit/${commit.sha}`,
+              repository: {
+                name: event.repo.name.split('/')[1],
+                full_name: event.repo.name,
+              },
+            }))
+          )
+          .slice(0, 10);
+        setCommits(pushEvents);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -167,39 +212,54 @@ export default function GitHub() {
           </p>
         </div>
 
-        {/* Profile Card - Compact */}
+        {/* Profile Card - Redesigned */}
         {user && (
-          <Card className="bg-card/80 backdrop-blur-xl border-card-border p-3 sm:p-4 md:p-5 mb-6 sm:mb-8 animate-slide-in-left">
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <img 
-                src={user.avatar_url}
-                alt={user.name}
-                className="w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-lg object-cover border-2 border-primary/20 mx-auto sm:mx-0"
-              />
-              <div className="flex-1 space-y-2 text-center sm:text-left">
+          <Card className="bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl border-card-border p-4 sm:p-6 mb-6 sm:mb-8 animate-slide-in-left hover-elevate transition-smooth relative overflow-hidden group">
+            {/* Background accent */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            
+            <div className="relative z-10 flex flex-col md:flex-row gap-4 sm:gap-6">
+              {/* Avatar */}
+              <div className="mx-auto md:mx-0">
+                <div className="relative">
+                  <img 
+                    src={user.avatar_url}
+                    alt={user.name}
+                    className="w-24 h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-2xl object-cover border-4 border-primary/30 shadow-lg group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground rounded-full p-2 shadow-lg">
+                    <SiGithub className="w-5 h-5 sm:w-6 sm:h-6" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="flex-1 space-y-3 text-center md:text-left">
                 <div>
-                  <h2 className="text-xl sm:text-2xl font-bold font-poppins">{user.name}</h2>
+                  <h2 className="text-2xl sm:text-3xl font-bold font-poppins bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                    {user.name}
+                  </h2>
                   <a 
                     href={`https://github.com/${user.login}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm sm:text-base text-primary hover:underline inline-flex items-center gap-1 justify-center sm:justify-start"
+                    className="text-base sm:text-lg text-primary hover:text-primary/80 inline-flex items-center gap-1.5 font-mono transition-colors"
                   >
                     @{user.login}
-                    <ExternalLink className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
                 
                 {user.bio && (
-                  <p className="text-xs sm:text-sm text-muted-foreground" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
+                  <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto md:mx-0" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                     {user.bio}
                   </p>
                 )}
 
-                <div className="flex flex-wrap gap-2 sm:gap-3 text-xs sm:text-sm justify-center sm:justify-start">
+                <div className="flex flex-wrap gap-3 sm:gap-4 text-sm justify-center md:justify-start">
                   {user.location && (
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                      <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <div className="flex items-center gap-1.5 text-muted-foreground bg-muted/50 px-3 py-1.5 rounded-full">
+                      <MapPin className="w-4 h-4" />
                       <span>{user.location}</span>
                     </div>
                   )}
@@ -208,34 +268,94 @@ export default function GitHub() {
                       href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-primary hover:underline"
+                      className="flex items-center gap-1.5 text-primary hover:text-primary/80 bg-primary/10 px-3 py-1.5 rounded-full transition-colors"
                     >
-                      <LinkIcon className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="truncate max-w-[120px] sm:max-w-none">{user.blog}</span>
+                      <LinkIcon className="w-4 h-4" />
+                      <span className="truncate max-w-[150px]">{user.blog}</span>
                     </a>
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-3 sm:gap-4 text-xs sm:text-sm font-mono justify-center sm:justify-start">
-                  <div className="flex items-center gap-1">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
-                    <span className="font-bold">{user.followers}</span>
-                    <span className="text-muted-foreground hidden xs:inline">followers</span>
+                <div className="flex flex-wrap gap-4 sm:gap-6 text-sm font-mono justify-center md:justify-start pt-2">
+                  <div className="text-center">
+                    <div className="flex items-center gap-1.5 justify-center md:justify-start">
+                      <Users className="w-4 h-4 text-primary" />
+                      <span className="text-xl sm:text-2xl font-bold text-foreground">{user.followers}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">followers</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
-                    <span className="font-bold">{user.following}</span>
-                    <span className="text-muted-foreground hidden xs:inline">following</span>
+                  <div className="text-center">
+                    <div className="flex items-center gap-1.5 justify-center md:justify-start">
+                      <Users className="w-4 h-4 text-primary" />
+                      <span className="text-xl sm:text-2xl font-bold text-foreground">{user.following}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">following</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Code className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
-                    <span className="font-bold">{user.public_repos}</span>
-                    <span className="text-muted-foreground hidden xs:inline">repos</span>
+                  <div className="text-center">
+                    <div className="flex items-center gap-1.5 justify-center md:justify-start">
+                      <Code className="w-4 h-4 text-primary" />
+                      <span className="text-xl sm:text-2xl font-bold text-foreground">{user.public_repos}</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground">repositories</span>
                   </div>
                 </div>
               </div>
             </div>
           </Card>
+        )}
+
+        {/* Recent Commits Section */}
+        {commits.length > 0 && (
+          <div className="mb-6 sm:mb-8 animate-slide-in-right">
+            <div className="relative flex items-center mb-4">
+              <div className="flex-grow border-t border-muted-foreground/30"></div>
+              <h3 
+                className="px-3 text-xs sm:text-sm font-mono text-muted-foreground tracking-wider"
+                style={{ fontFamily: 'JetBrains Mono, monospace' }}
+              >
+                Recent Commits ({commits.length})
+              </h3>
+              <div className="flex-grow border-t border-muted-foreground/30"></div>
+            </div>
+
+            <Card className="bg-card/80 backdrop-blur-xl border-card-border p-4 sm:p-5">
+              <div className="space-y-3">
+                {commits.map((commit, index) => (
+                  <a
+                    key={commit.sha}
+                    href={commit.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-3 rounded-lg bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-primary/30 transition-all group"
+                    style={{ animationDelay: `${index * 30}ms` }}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-primary group-hover:scale-150 transition-transform" />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                          <Badge variant="secondary" className="text-xs font-mono bg-primary/20 text-primary border-primary/30">
+                            {commit.repository.name}
+                          </Badge>
+                          <span className="text-xs text-muted-foreground font-mono">
+                            {formatDate(commit.commit.author.date)}
+                          </span>
+                        </div>
+                        <p className="text-sm font-mono text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                          {commit.commit.message.split('\n')[0]}
+                        </p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs text-muted-foreground font-mono">
+                            {commit.sha.substring(0, 7)}
+                          </span>
+                          <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </Card>
+          </div>
         )}
 
         {/* Projects Grid */}
