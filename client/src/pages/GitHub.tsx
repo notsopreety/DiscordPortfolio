@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, GitFork, Star, Eye, Code, Calendar, MapPin, Users, Link as LinkIcon } from 'lucide-react';
+import { ExternalLink, GitFork, Star, Eye, Code, Calendar, MapPin, Users, Link as LinkIcon, ChevronDown } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import SEO from '@/components/SEO';
 import PixelBackground from '@/components/PixelBackground';
@@ -58,6 +58,7 @@ export default function GitHub() {
   const [commits, setCommits] = useState<GitHubCommit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'stars' | 'updated'>('stars');
   const username = 'notsopreety';
 
   useEffect(() => {
@@ -80,16 +81,8 @@ export default function GitHub() {
       if (!reposResponse.ok) throw new Error('Failed to fetch repositories');
       const reposData = await reposResponse.json();
 
-      const sortedRepos = reposData
-        .filter((repo: GitHubRepo) => !repo.name.includes('notsopreety'))
-        .sort((a: GitHubRepo, b: GitHubRepo) => {
-          const starsA = a.stargazers_count;
-          const starsB = b.stargazers_count;
-          if (starsB !== starsA) return starsB - starsA;
-          return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
-        });
-
-      setRepos(sortedRepos);
+      const filteredRepos = reposData.filter((repo: GitHubRepo) => !repo.name.includes('notsopreety'));
+      setRepos(filteredRepos);
 
       try {
         const eventsResponse = await fetch(
@@ -382,8 +375,32 @@ export default function GitHub() {
             <div className="flex-grow border-t border-muted-foreground/30"></div>
           </div>
 
+          {/* Sorting Controls */}
+          <div className="flex justify-end mb-3">
+            <div className="relative inline-block">
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as 'stars' | 'updated')}
+                className="appearance-none bg-card/80 backdrop-blur-xl border border-card-border rounded-lg px-3 sm:px-4 py-2 pr-8 sm:pr-10 text-xs sm:text-sm font-mono text-foreground hover:border-primary/50 focus:outline-none focus:border-primary transition-colors cursor-pointer"
+              >
+                <option value="stars">Most Stars</option>
+                <option value="updated">Latest Updated</option>
+              </select>
+              <ChevronDown className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-            {repos.map((repo, index) => (
+            {[...repos].sort((a, b) => {
+              if (sortBy === 'stars') {
+                if (b.stargazers_count !== a.stargazers_count) {
+                  return b.stargazers_count - a.stargazers_count;
+                }
+                return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+              } else {
+                return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
+              }
+            }).map((repo, index) => (
               <Card 
                 key={repo.id}
                 className="bg-card/80 backdrop-blur-xl border-card-border p-3 sm:p-4 hover-elevate transition-smooth hover:shadow-xl group animate-fade-in-up"
