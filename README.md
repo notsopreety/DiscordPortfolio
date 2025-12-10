@@ -95,12 +95,12 @@ The application will be available at `http://localhost:5000`
 
 ## 🚀 Deployment
 
-### Deploy on Replit
-1. Fork this repository on Replit
-2. Set up environment variables in the Secrets tool:
+### Deploy on Vercel
+1. Fork this repository.
+2. Edit .env file with these creds:
    - `VITE_DISCORD_ID`: Your Discord user ID
    - `VITE_SPOTIFY_API_BASE_URL`: `https://spot-rect.vercel.app`
-3. Click the "Run" button
+3. Or simply add data in vercel project environment variables.
 4. Your portfolio will be live!
 
 ### Build for Production
