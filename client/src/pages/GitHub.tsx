@@ -99,24 +99,30 @@ export default function GitHub() {
         if (eventsResponse.ok) {
           const eventsData = await eventsResponse.json();
           const pushEvents = eventsData
-            .filter((event: any) => event.type === 'PushEvent' && event.payload?.commits)
-            .flatMap((event: any) => 
-              (event.payload.commits || []).map((commit: any) => ({
-                sha: commit.sha,
+            .filter((event: any) => event.type === 'PushEvent')
+            .map((event: any) => {
+              // Get the commit SHA from the payload head
+              const commitSha = event.payload?.head || '';
+              // Extract commit message from the first commit in the payload if available
+              const firstCommit = event.payload?.commits?.[0];
+              const commitMessage = firstCommit?.message || 'Push to repository';
+              
+              return {
+                sha: commitSha,
                 commit: {
-                  message: commit.message,
+                  message: commitMessage,
                   author: {
                     name: event.actor.login,
                     date: event.created_at,
                   },
                 },
-                html_url: `https://github.com/${event.repo.name}/commit/${commit.sha}`,
+                html_url: `https://github.com/${event.repo.name}/commit/${commitSha}`,
                 repository: {
                   name: event.repo.name.split('/')[1],
                   full_name: event.repo.name,
                 },
-              }))
-            )
+              };
+            })
             .filter((commit: any) => commit.sha)
             .slice(0, 10);
           setCommits(pushEvents);
