@@ -311,20 +311,20 @@ export default function GitHub() {
         )}
 
         {/* Recent Commits Section */}
-        {commits.length > 0 && (
-          <div className="mb-6 sm:mb-8 animate-slide-in-right">
-            <div className="relative flex items-center mb-4">
-              <div className="flex-grow border-t border-muted-foreground/30"></div>
-              <h3 
-                className="px-3 text-xs sm:text-sm font-mono text-muted-foreground tracking-wider"
-                style={{ fontFamily: 'JetBrains Mono, monospace' }}
-              >
-                Recent Commits ({commits.length})
-              </h3>
-              <div className="flex-grow border-t border-muted-foreground/30"></div>
-            </div>
+        <div className="mb-6 sm:mb-8 animate-slide-in-right">
+          <div className="relative flex items-center mb-4">
+            <div className="flex-grow border-t border-muted-foreground/30"></div>
+            <h3 
+              className="px-3 text-base sm:text-lg font-bold text-foreground"
+              style={{ fontFamily: 'JetBrains Mono, monospace' }}
+            >
+              💻 Latest Commits {commits.length > 0 && `(${commits.length})`}
+            </h3>
+            <div className="flex-grow border-t border-muted-foreground/30"></div>
+          </div>
 
-            <Card className="bg-card/80 backdrop-blur-xl border-card-border p-4 sm:p-5">
+          <Card className="bg-card/80 backdrop-blur-xl border-card-border p-4 sm:p-5">
+            {commits.length > 0 ? (
               <div className="space-y-3">
                 {commits.map((commit, index) => (
                   <a
@@ -332,13 +332,13 @@ export default function GitHub() {
                     href={commit.html_url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block p-3 rounded-lg bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-primary/30 transition-all group"
+                    className="block p-3 sm:p-4 rounded-lg bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-primary/30 transition-all group animate-fade-in-up"
                     style={{ animationDelay: `${index * 30}ms` }}
                   >
                     <div className="flex items-start gap-3">
-                      <div className="flex-shrink-0 w-2 h-2 mt-2 rounded-full bg-primary group-hover:scale-150 transition-transform" />
+                      <div className="flex-shrink-0 w-2.5 h-2.5 mt-2 rounded-full bg-primary group-hover:scale-150 transition-transform" />
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <Badge variant="secondary" className="text-xs font-mono bg-primary/20 text-primary border-primary/30">
                             {commit.repository.name}
                           </Badge>
@@ -346,23 +346,34 @@ export default function GitHub() {
                             {formatDate(commit.commit.author.date)}
                           </span>
                         </div>
-                        <p className="text-sm font-mono text-foreground line-clamp-2 group-hover:text-primary transition-colors">
+                        <p className="text-sm sm:text-base font-mono text-foreground line-clamp-2 group-hover:text-primary transition-colors mb-2">
                           {commit.commit.message.split('\n')[0]}
                         </p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs text-muted-foreground font-mono">
+                        <div className="flex items-center gap-2">
+                          <code className="text-xs text-muted-foreground font-mono bg-muted/50 px-2 py-1 rounded">
                             {commit.sha.substring(0, 7)}
+                          </code>
+                          <ExternalLink className="w-3.5 h-3.5 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                            View on GitHub →
                           </span>
-                          <ExternalLink className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
                       </div>
                     </div>
                   </a>
                 ))}
               </div>
-            </Card>
-          </div>
-        )}
+            ) : (
+              <div className="text-center py-8">
+                <Code className="w-12 h-12 mx-auto mb-3 text-muted-foreground/50" />
+                <p className="text-sm text-muted-foreground font-mono mb-1">No recent commits found</p>
+                <p className="text-xs text-muted-foreground/70">
+                  Make some commits to see them here!
+                </p>
+              </div>
+            )}
+          </Card>
+        </div>
 
         {/* Projects Grid */}
         <div className="space-y-4">
