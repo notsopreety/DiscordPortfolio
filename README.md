@@ -57,6 +57,8 @@ _Note: This Repo is maintained with the help of AI. However UI/UX design and int
 - **Discord API** - User profile and connection data
 - **Spotify Web API** - Music integration
 
+## Spotify Integration: [spotify-tracks](https://github.com/notsopreety/spotify-tracks)
+
 ## 📦 Installation
 
 1. **Clone the repository**
