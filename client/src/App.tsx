@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import Portfolio from "@/pages/Portfolio";
 import Spotify from "@/pages/Spotify";
 import Contact from "@/pages/Contact";
+import GitHub from "@/pages/GitHub";
 import NotFound from "@/pages/not-found";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/" component={Portfolio} />
       <Route path="/spotify" component={Spotify} />
       <Route path="/contact" component={Contact} />
+      <Route path="/github" component={GitHub} />
       <Route component={NotFound} />
     </Switch>
   );

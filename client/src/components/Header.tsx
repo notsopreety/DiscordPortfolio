@@ -10,11 +10,11 @@ export default function Header() {
     const updateHash = () => {
       setCurrentHash(window.location.hash);
     };
-    
+
     updateHash();
     window.addEventListener('hashchange', updateHash);
     window.addEventListener('popstate', updateHash);
-    
+
     return () => {
       window.removeEventListener('hashchange', updateHash);
       window.removeEventListener('popstate', updateHash);
@@ -56,6 +56,23 @@ export default function Header() {
               </svg>
             </Link>
             <Link 
+              href="/github"
+              className={`nav-link-wavy text-xs sm:text-base text-muted-foreground hover:text-foreground px-2 sm:px-3 py-1.5 transition-smooth relative inline-block ${
+                location === '/github' ? 'nav-link-active' : ''
+              }`}
+              style={{ fontFamily: 'JetBrains Mono, monospace' }}
+              data-testid="link-github"
+            >
+              projects
+              <svg className="wavy-underline" viewBox="0 0 100 8" preserveAspectRatio="none">
+                <path d="M0,4 Q5,0 10,4 T20,4 T30,4 T40,4 T50,4 T60,4 T70,4 T80,4 T90,4 T100,4" 
+                      stroke="currentColor" 
+                      strokeWidth="3" 
+                      fill="none" 
+                      vectorEffect="non-scaling-stroke"/>
+              </svg>
+            </Link>
+            <Link 
               href="/contact"
               className={`nav-link-wavy text-xs sm:text-base text-muted-foreground hover:text-foreground px-2 sm:px-3 py-1.5 transition-smooth relative inline-block ${
                 location === '/contact' ? 'nav-link-active' : ''
@@ -77,7 +94,7 @@ export default function Header() {
               target="_blank"
               rel="noopener noreferrer"
               className="text-muted-foreground hover:text-foreground transition-smooth p-1.5 sm:p-2"
-              data-testid="link-github"
+              data-testid="link-github-external"
               aria-label="GitHub"
             >
               <Github className="w-4 h-4 sm:w-5 sm:h-5" />
