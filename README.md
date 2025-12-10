@@ -3,6 +3,8 @@
 
 A modern, interactive portfolio website that integrates with Discord's Rich Presence to showcase your real-time status, Spotify activity, and connected social accounts. Built with React, TypeScript, and Vite.
 
+_Note: This Repo is maintained with the help of AI. However UI/UX design and integrations are mine._
+
 
 ## ✨ Features
 
