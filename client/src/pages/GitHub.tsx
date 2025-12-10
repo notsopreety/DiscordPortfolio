@@ -92,32 +92,38 @@ export default function GitHub() {
       
       setRepos(sortedRepos);
 
-      const eventsResponse = await fetch(
-        `https://api.github.com/users/${username}/events/public?per_page=100`
-      );
-      if (eventsResponse.ok) {
-        const eventsData = await eventsResponse.json();
-        const pushEvents = eventsData
-          .filter((event: any) => event.type === 'PushEvent')
-          .flatMap((event: any) => 
-            event.payload.commits.map((commit: any) => ({
-              sha: commit.sha,
-              commit: {
-                message: commit.message,
-                author: {
-                  name: event.actor.login,
-                  date: event.created_at,
+      try {
+        const eventsResponse = await fetch(
+          `https://api.github.com/users/${username}/events/public?per_page=100`
+        );
+        if (eventsResponse.ok) {
+          const eventsData = await eventsResponse.json();
+          const pushEvents = eventsData
+            .filter((event: any) => event.type === 'PushEvent' && event.payload?.commits)
+            .flatMap((event: any) => 
+              (event.payload.commits || []).map((commit: any) => ({
+                sha: commit.sha,
+                commit: {
+                  message: commit.message,
+                  author: {
+                    name: event.actor.login,
+                    date: event.created_at,
+                  },
                 },
-              },
-              html_url: `https://github.com/${event.repo.name}/commit/${commit.sha}`,
-              repository: {
-                name: event.repo.name.split('/')[1],
-                full_name: event.repo.name,
-              },
-            }))
-          )
-          .slice(0, 10);
-        setCommits(pushEvents);
+                html_url: `https://github.com/${event.repo.name}/commit/${commit.sha}`,
+                repository: {
+                  name: event.repo.name.split('/')[1],
+                  full_name: event.repo.name,
+                },
+              }))
+            )
+            .filter((commit: any) => commit.sha)
+            .slice(0, 10);
+          setCommits(pushEvents);
+        }
+      } catch (commitError) {
+        console.error('Failed to fetch commits:', commitError);
+        setCommits([]);
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
