@@ -376,17 +376,21 @@ export default function GitHub() {
           </div>
 
           {/* Sorting Controls */}
-          <div className="flex justify-end mb-3">
-            <div className="relative inline-block">
+          <div className="flex justify-end mb-4">
+            <div className="relative group">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-purple-500/20 rounded-lg blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as 'stars' | 'updated')}
-                className="appearance-none bg-card/80 backdrop-blur-xl border border-card-border rounded-lg px-3 sm:px-4 py-2 pr-8 sm:pr-10 text-xs sm:text-sm font-mono text-foreground hover:border-primary/50 focus:outline-none focus:border-primary transition-colors cursor-pointer"
+                className="relative appearance-none bg-card/90 backdrop-blur-xl border-2 border-card-border rounded-lg px-4 sm:px-5 py-2.5 sm:py-3 pr-10 sm:pr-12 text-xs sm:text-sm font-mono text-foreground hover:border-primary/60 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl"
+                style={{ fontFamily: 'JetBrains Mono, monospace' }}
               >
-                <option value="stars">Most Stars</option>
-                <option value="updated">Latest Updated</option>
+                <option value="stars">⭐ Most Stars</option>
+                <option value="updated">🕒 Latest Updated</option>
               </select>
-              <ChevronDown className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+              <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-primary group-hover:text-primary/80 transition-colors" />
+              </div>
             </div>
           </div>
 
