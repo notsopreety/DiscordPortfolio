@@ -149,12 +149,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/notsopreety/DiscordPortfolio/issues).
 
-## 📧 Contact
-
-**Samir Thakuri**
-- Discord: [notsopreety](https://discord.com/users/931511745284038696)
-- GitHub: [@notsopreety](https://github.com/notsopreety)
-
 ---
 
 Made with 💜 by [notsopreety](https://github.com/notsopreety)
