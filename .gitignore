@@ -1,0 +1,10 @@
+node_modules
+dist
+.upm
+package-lock.json
+.config
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+.vercel
