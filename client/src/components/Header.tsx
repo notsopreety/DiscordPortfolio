@@ -154,15 +154,22 @@ export default function Header() {
                 <Link 
                   key={link.href}
                   href={link.href}
-                  className={`block text-base font-medium px-4 py-3 rounded-lg transition-all ${
+                  className={`nav-link-wavy-mobile block text-base font-medium px-4 py-3 rounded-lg transition-all relative ${
                     location === link.href 
-                      ? 'bg-primary/20 text-primary border-l-4 border-primary' 
+                      ? 'nav-link-active-mobile bg-primary/20 text-primary border-l-4 border-primary' 
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                   }`}
                   style={{ fontFamily: 'JetBrains Mono, monospace' }}
                   data-testid={`${link.testId}-mobile`}
                 >
-                  {link.label}
+                  <span className="nav-link-text-mobile">{link.label}</span>
+                  <svg className="wavy-underline-mobile" viewBox="0 0 100 8" preserveAspectRatio="none">
+                    <path d="M0,4 Q5,0 10,4 T20,4 T30,4 T40,4 T50,4 T60,4 T70,4 T80,4 T90,4 T100,4" 
+                          stroke="currentColor" 
+                          strokeWidth="3" 
+                          fill="none" 
+                          vectorEffect="non-scaling-stroke"/>
+                  </svg>
                 </Link>
               ))}
             </div>
