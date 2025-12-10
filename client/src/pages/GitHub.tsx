@@ -1,10 +1,12 @@
+
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { ExternalLink, GitFork, Star, Eye, Code, Calendar, MapPin, Users, Link as LinkIcon } from 'lucide-react';
+import { ExternalLink, GitFork, Star, Eye, Code, Calendar, MapPin, Users, Link as LinkIcon, Menu, X, GitCommit } from 'lucide-react';
 import { SiGithub } from 'react-icons/si';
 import SEO from '@/components/SEO';
 import PixelBackground from '@/components/PixelBackground';
+import { Button } from '@/components/ui/button';
 
 interface GitHubRepo {
   id: number;
@@ -58,12 +60,38 @@ export default function GitHub() {
   const [commits, setCommits] = useState<GitHubCommit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const username = 'notsopreety';
 
   useEffect(() => {
     document.body.style.overflow = 'auto';
     fetchGitHubData();
   }, []);
+
+  // Close sidebar when clicking outside on mobile
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const sidebar = document.getElementById('mobile-sidebar');
+      const menuButton = document.getElementById('mobile-menu-button');
+      if (isSidebarOpen && sidebar && menuButton && 
+          !sidebar.contains(e.target as Node) && 
+          !menuButton.contains(e.target as Node)) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    if (isSidebarOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.body.style.overflow = 'auto';
+    };
+  }, [isSidebarOpen]);
 
   const fetchGitHubData = async () => {
     try {
@@ -100,9 +128,7 @@ export default function GitHub() {
           const pushEvents = eventsData
             .filter((event: any) => event.type === 'PushEvent')
             .map((event: any) => {
-              // Get the commit SHA from the payload head
               const commitSha = event.payload?.head || '';
-              // Extract commit message from the first commit in the payload if available
               const firstCommit = event.payload?.commits?.[0];
               const commitMessage = firstCommit?.message || 'Push to repository';
 
@@ -165,6 +191,121 @@ export default function GitHub() {
     return colors[language || ''] || '#858585';
   };
 
+  // Sidebar Content Component
+  const SidebarContent = () => (
+    <div className="h-full overflow-y-auto">
+      {/* Profile Section */}
+      {user && (
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-3 mb-3">
+            <img 
+              src={user.avatar_url}
+              alt={user.name}
+              className="w-12 h-12 rounded-full border-2 border-primary/30"
+            />
+            <div className="flex-1 min-w-0">
+              <h3 className="font-bold text-sm truncate">{user.name}</h3>
+              <a 
+                href={`https://github.com/${user.login}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-primary hover:underline truncate block"
+              >
+                @{user.login}
+              </a>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-2 text-center text-xs">
+            <div>
+              <div className="font-bold text-foreground">{user.followers}</div>
+              <div className="text-muted-foreground">Followers</div>
+            </div>
+            <div>
+              <div className="font-bold text-foreground">{user.following}</div>
+              <div className="text-muted-foreground">Following</div>
+            </div>
+            <div>
+              <div className="font-bold text-foreground">{user.public_repos}</div>
+              <div className="text-muted-foreground">Repos</div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Recent Commits Section */}
+      {commits.length > 0 && (
+        <div className="p-4 border-b border-border">
+          <div className="flex items-center gap-2 mb-3">
+            <GitCommit className="w-4 h-4 text-primary" />
+            <h3 className="font-bold text-sm">Recent Commits</h3>
+          </div>
+          <div className="space-y-2">
+            {commits.map((commit) => (
+              <a
+                key={commit.sha}
+                href={commit.html_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block p-2 rounded-lg bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-primary/30 transition-all"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <div className="flex items-start gap-2">
+                  <div className="flex-shrink-0 w-1.5 h-1.5 mt-1.5 rounded-full bg-primary" />
+                  <div className="flex-1 min-w-0">
+                    <Badge variant="secondary" className="text-[10px] font-mono bg-primary/20 text-primary border-primary/30 mb-1">
+                      {commit.repository.name}
+                    </Badge>
+                    <p className="text-xs font-mono text-foreground line-clamp-2">
+                      {commit.commit.message.split('\n')[0]}
+                    </p>
+                    <span className="text-[10px] text-muted-foreground font-mono">
+                      {commit.sha.substring(0, 7)} • {formatDate(commit.commit.author.date)}
+                    </span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Quick Stats */}
+      {user && (
+        <div className="p-4">
+          <h3 className="font-bold text-sm mb-3 flex items-center gap-2">
+            <Code className="w-4 h-4 text-primary" />
+            Quick Info
+          </h3>
+          <div className="space-y-2 text-xs">
+            {user.location && (
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <MapPin className="w-3 h-3" />
+                <span>{user.location}</span>
+              </div>
+            )}
+            {user.blog && (
+              <a 
+                href={user.blog.startsWith('http') ? user.blog : `https://${user.blog}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-primary hover:underline"
+                onClick={() => setIsSidebarOpen(false)}
+              >
+                <LinkIcon className="w-3 h-3" />
+                <span className="truncate">{user.blog}</span>
+              </a>
+            )}
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Calendar className="w-3 h-3" />
+              <span>Joined {formatDate(user.created_at)}</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen relative overflow-hidden page-transition">
@@ -206,31 +347,76 @@ export default function GitHub() {
       />
       <PixelBackground />
 
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Mobile Sidebar */}
+      <aside
+        id="mobile-sidebar"
+        className={`fixed top-0 left-0 h-full w-72 bg-card/95 backdrop-blur-xl border-r border-card-border z-50 transform transition-transform duration-300 ease-in-out md:hidden ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        {/* Sidebar Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="flex items-center gap-2">
+            <SiGithub className="w-6 h-6 text-primary" />
+            <h2 className="font-bold text-lg">GitHub</h2>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsSidebarOpen(false)}
+            className="hover:bg-muted"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+
+        <SidebarContent />
+      </aside>
+
       <div className="container max-w-7xl mx-auto px-4 sm:px-6 relative z-10 pt-24 pb-12">
-        {/* Header */}
+        {/* Header with Mobile Menu Button */}
         <div className="mb-6 sm:mb-8 animate-fade-in">
-          <div className="flex items-center gap-2 sm:gap-3 mb-3">
-            <SiGithub className="w-8 h-8 sm:w-10 sm:h-10 text-foreground" />
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
-              GitHub
-            </h1>
+          <div className="flex items-center justify-between gap-2 sm:gap-3 mb-3">
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Mobile Menu Button */}
+              <Button
+                id="mobile-menu-button"
+                variant="outline"
+                size="icon"
+                onClick={() => setIsSidebarOpen(true)}
+                className="md:hidden border-primary/30 hover:bg-primary/10"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              
+              <SiGithub className="w-8 h-8 sm:w-10 sm:h-10 text-foreground" />
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground">
+                GitHub
+              </h1>
+            </div>
           </div>
           <p 
-            className="text-sm sm:text-base text-muted-foreground italic"
+            className="text-sm sm:text-base text-muted-foreground italic pl-0 md:pl-0"
             style={{ fontFamily: 'JetBrains Mono, monospace' }}
           >
             "My code playground where magic happens~ ✨"
           </p>
         </div>
 
-        {/* Profile Card - Redesigned */}
+        {/* Desktop Profile Card */}
         {user && (
-          <Card className="bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl border-card-border p-4 sm:p-6 mb-6 sm:mb-8 animate-slide-in-left hover-elevate transition-smooth relative overflow-hidden group">
-            {/* Background accent */}
+          <Card className="hidden md:block bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl border-card-border p-4 sm:p-6 mb-6 sm:mb-8 animate-slide-in-left hover-elevate transition-smooth relative overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             <div className="relative z-10 flex flex-col md:flex-row gap-4 sm:gap-6">
-              {/* Avatar */}
               <div className="mx-auto md:mx-0">
                 <div className="relative">
                   <img 
@@ -244,7 +430,6 @@ export default function GitHub() {
                 </div>
               </div>
 
-              {/* Info */}
               <div className="flex-1 space-y-3 text-center md:text-left">
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-bold font-poppins bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
@@ -315,9 +500,9 @@ export default function GitHub() {
           </Card>
         )}
 
-        {/* Recent Commits Section */}
+        {/* Desktop Recent Commits */}
         {commits.length > 0 && (
-          <div className="mb-6 sm:mb-8 animate-slide-in-right">
+          <div className="hidden md:block mb-6 sm:mb-8 animate-slide-in-right">
             <div className="relative flex items-center mb-4">
               <div className="flex-grow border-t border-muted-foreground/30"></div>
               <h3 
