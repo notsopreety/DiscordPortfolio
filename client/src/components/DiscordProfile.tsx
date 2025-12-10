@@ -6,6 +6,7 @@ import { Link2, ExternalLink, Moon, Minus, BadgeCheck } from 'lucide-react';
 import { SiGithub, SiReddit, SiSpotify, SiTiktok, SiX, SiFacebook, SiDiscord  } from 'react-icons/si';
 import { MessageCircle } from 'lucide-react';
 import type { DiscordUser, Badge, Activity, ConnectedAccount } from '@/types/discord';
+import { env } from '@/config/env';
 
 interface DiscordProfileProps {
   user: DiscordUser;
@@ -48,7 +49,7 @@ const connectionUrls: Record<string, (account: ConnectedAccount) => string> = {
   tiktok: (account) => `https://tiktok.com/@${account.name}`,
   twitter: (account) => `https://twitter.com/${account.name}`,
   facebook: (account) => `https://facebook.com/dev.samir.xyz`,
-  discord: () => `https://discord.com/users/931511745284038696`,
+  discord: () => `https://discord.com/users/${env.DISCORD_ID}`,
 };
 
 export default function DiscordProfile({ user, status, badges, profileData, customStatus }: DiscordProfileProps) {

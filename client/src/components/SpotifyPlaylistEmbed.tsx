@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Music2 } from 'lucide-react';
+import { env } from '@/config/env';
 
 export default function SpotifyPlaylistEmbed() {
   const [playlistId, setPlaylistId] = useState<string | null>(null);
@@ -10,7 +11,7 @@ export default function SpotifyPlaylistEmbed() {
   useEffect(() => {
     const fetchPlaylistId = async () => {
       try {
-        const response = await fetch('https://spot-rect.vercel.app/update-top-tracks');
+        const response = await fetch(`${env.SPOTIFY_API_BASE_URL}/update-top-tracks`);
         const data = await response.json();
         
         if (data.success && data.playlist_id) {

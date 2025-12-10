@@ -1,13 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import type { DstnProfile } from '@/types/discord';
-
-const DISCORD_ID = '931511745284038696';
+import type { DiscordProfileResponse } from '@/types/discord';
+import { env } from '@/config/env';
 
 export function useDstnProfile() {
-  return useQuery<DstnProfile>({
-    queryKey: ['dstn-profile', DISCORD_ID],
+  return useQuery<DiscordProfileResponse>({
+    queryKey: ['dstn-profile', env.DISCORD_ID],
     queryFn: async () => {
-      const response = await fetch(`https://dcdn.dstn.to/profile/${DISCORD_ID}`);
+      const response = await fetch(`https://dstn.to/api/users/${env.DISCORD_ID}`);
       if (!response.ok) {
         throw new Error('Failed to fetch DSTN profile');
       }

@@ -8,6 +8,7 @@ import PixelBackground from "@/components/PixelBackground";
 import SpotifyTrackSkeleton from "@/components/SpotifyTrackSkeleton";
 import TrackPlayer from "@/components/TrackPlayer";
 import { useAudio } from "@/contexts/AudioContext";
+import { env } from "@/config/env";
 
 interface SpotifyArtist {
   name: string;
@@ -65,7 +66,7 @@ const Spotify = memo(() => {
   const { data, isLoading, error } = useQuery<SpotifyResponse>({
     queryKey: ['/spotify/recent-tracks'],
     queryFn: async () => {
-      const response = await fetch('https://spot-rect.vercel.app/recent-tracks');
+      const response = await fetch(`${env.SPOTIFY_API_BASE_URL}/recent-tracks`);
       if (!response.ok) throw new Error('Failed to fetch tracks');
       return response.json();
     },
