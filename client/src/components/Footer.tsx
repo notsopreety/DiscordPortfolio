@@ -1,34 +1,9 @@
 import { Link } from 'wouter';
-import { Github, Heart, Sparkles, Coffee, ExternalLink, Clock } from 'lucide-react';
+import { Github, Heart, Sparkles, Coffee, ExternalLink } from 'lucide-react';
 import { FaDiscord, FaReact } from "react-icons/fa";
-import { useEffect, useState } from 'react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-  const [activeTime, setActiveTime] = useState(0);
-
-  useEffect(() => {
-    const startTime = Date.now();
-    const interval = setInterval(() => {
-      setActiveTime(Math.floor((Date.now() - startTime) / 1000));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const formatTime = (seconds: number) => {
-    const hrs = Math.floor(seconds / 3600);
-    const mins = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    if (hrs > 0) {
-      return `${hrs}h ${mins}m ${secs}s`;
-    } else if (mins > 0) {
-      return `${mins}m ${secs}s`;
-    } else {
-      return `${secs}s`;
-    }
-  };
 
   return (
     <footer className="relative mt-16 border-t border-border/40 bg-background/50 backdrop-blur-sm">
@@ -137,30 +112,16 @@ export default function Footer() {
 
         {/* Bottom decorative section */}
         <div className="mt-4 sm:mt-6 md:mt-8 pt-3 sm:pt-4 md:pt-6 border-t border-border/40">
-          <div className="flex flex-col gap-3 sm:gap-2">
-            {/* Active Time Tracker */}
-            <div className="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-pink-500/10 via-purple-500/10 to-blue-500/10 border border-primary/20 active-time-tracker">
-              <Clock className="w-4 h-4 text-primary animate-pulse" />
-              <span className="text-sm font-semibold text-foreground" style={{ fontFamily: 'var(--font-pixel)' }}>
-                You've been here for:
-              </span>
-              <span className="text-sm font-bold text-primary pixel-timer">
-                {formatTime(activeTime)}
-              </span>
-              <Sparkles className="w-3 h-3 text-pink-500 animate-scale" />
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Coffee className="w-3 h-3" />
+              <span>Fueled by madness & caffeine</span>
             </div>
-
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Coffee className="w-3 h-3" />
-                <span>Fueled by madness & caffeine</span>
-              </div>
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <span>Built with</span>
-                <Heart className="w-3 h-3 text-red-500 fill-current animate-pulse" />
-                <span>in React</span>
-                <FaReact className="w-3 h-3 text-primary animate-spin-slow" />
-              </div>
+            <div className="flex items-center gap-1 text-xs text-muted-foreground">
+              <span>Built with</span>
+              <Heart className="w-3 h-3 text-red-500 fill-current animate-pulse" />
+              <span>in React</span>
+              <FaReact className="w-3 h-3 text-primary animate-spin-slow" />
             </div>
           </div>
         </div>
