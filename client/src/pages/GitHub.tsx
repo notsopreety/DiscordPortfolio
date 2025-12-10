@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -69,7 +68,7 @@ export default function GitHub() {
   const fetchGitHubData = async () => {
     try {
       setLoading(true);
-      
+
       const userResponse = await fetch(`https://api.github.com/users/${username}`);
       if (!userResponse.ok) throw new Error('Failed to fetch user data');
       const userData = await userResponse.json();
@@ -80,7 +79,7 @@ export default function GitHub() {
       );
       if (!reposResponse.ok) throw new Error('Failed to fetch repositories');
       const reposData = await reposResponse.json();
-      
+
       const sortedRepos = reposData
         .filter((repo: GitHubRepo) => !repo.name.includes('notsopreety'))
         .sort((a: GitHubRepo, b: GitHubRepo) => {
@@ -89,7 +88,7 @@ export default function GitHub() {
           if (starsB !== starsA) return starsB - starsA;
           return new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime();
         });
-      
+
       setRepos(sortedRepos);
 
       try {
@@ -106,7 +105,7 @@ export default function GitHub() {
               // Extract commit message from the first commit in the payload if available
               const firstCommit = event.payload?.commits?.[0];
               const commitMessage = firstCommit?.message || 'Push to repository';
-              
+
               return {
                 sha: commitSha,
                 commit: {
@@ -170,7 +169,7 @@ export default function GitHub() {
     return (
       <div className="min-h-screen relative overflow-hidden page-transition">
         <PixelBackground />
-        <div className="container max-w-6xl mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-16 sm:pt-20 pb-8 sm:pb-12">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 relative z-10 pt-24 pb-12">
           <div className="flex items-center justify-center min-h-[50vh]">
             <div className="text-center">
               <SiGithub className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 animate-pulse text-primary" />
@@ -186,7 +185,7 @@ export default function GitHub() {
     return (
       <div className="min-h-screen relative overflow-hidden page-transition">
         <PixelBackground />
-        <div className="container max-w-6xl mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-16 sm:pt-20 pb-8 sm:pb-12">
+        <div className="container max-w-7xl mx-auto px-4 sm:px-6 relative z-10 pt-24 pb-12">
           <div className="flex items-center justify-center min-h-[50vh]">
             <Card className="bg-destructive/10 border-destructive/50 p-4 sm:p-6 max-w-md mx-3">
               <h2 className="text-lg sm:text-xl font-bold text-destructive mb-2">Error Loading GitHub Data</h2>
@@ -207,7 +206,7 @@ export default function GitHub() {
       />
       <PixelBackground />
 
-      <div className="container max-w-6xl mx-auto px-3 sm:px-4 md:px-6 relative z-10 pt-16 sm:pt-20 pb-8 sm:pb-12">
+      <div className="container max-w-7xl mx-auto px-4 sm:px-6 relative z-10 pt-24 pb-12">
         {/* Header */}
         <div className="mb-6 sm:mb-8 animate-fade-in">
           <div className="flex items-center gap-2 sm:gap-3 mb-3">
@@ -229,7 +228,7 @@ export default function GitHub() {
           <Card className="bg-gradient-to-br from-card/90 to-card/70 backdrop-blur-xl border-card-border p-4 sm:p-6 mb-6 sm:mb-8 animate-slide-in-left hover-elevate transition-smooth relative overflow-hidden group">
             {/* Background accent */}
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            
+
             <div className="relative z-10 flex flex-col md:flex-row gap-4 sm:gap-6">
               {/* Avatar */}
               <div className="mx-auto md:mx-0">
@@ -261,7 +260,7 @@ export default function GitHub() {
                     <ExternalLink className="w-4 h-4" />
                   </a>
                 </div>
-                
+
                 {user.bio && (
                   <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-2xl mx-auto md:mx-0" style={{ fontFamily: 'JetBrains Mono, monospace' }}>
                     {user.bio}
