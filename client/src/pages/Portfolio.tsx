@@ -89,7 +89,7 @@ export default function Portfolio() {
               />
             </button>
             <img 
-              src="https://count.getloli.com/get/@notsopreety?theme=gelbooru"
+              src="https://count.getloli.com/get/@notsopreety?theme=booru-lewd"
               alt="Profile views counter"
               className="h-8 sm:h-10 md:h-12 lg:h-16"
               data-testid="img-view-counter"
